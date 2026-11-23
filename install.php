@@ -3,7 +3,7 @@
  * install.php
  *
  * @package TinyPortal
- * @version 3.0.5
+ * @version 3.0.6
  * @author IchBin - http://www.tinyportal.net
  * @founder Bloc
  * @license MPL 2.0
@@ -64,7 +64,7 @@ if ($manual) {
 	$render .= '
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml"><head>
-		<title>TinyPortal - v3.0.5 for SMF2.1 and SMF3.</title>
+		<title>TinyPortal - v3.0.6 for SMF2.1 and SMF3.</title>
 		 <link rel="stylesheet" type="text/css" href="' . $boardurl . '/Themes/default/css/index.css" />
 	</head><body>';
 }
@@ -517,7 +517,7 @@ if ($convertaccess) {
 // now we process all settings
 $settings_array = [
 	// KEEP TRACK OF INTERNAL VERSION HERE
-	'version' => '3.0.5',
+	'version' => '3.0.6',
 	'frontpage_title' => '',
 	'showforumfirst' => '0',
 	'hideadminmenu' => '0',
@@ -1492,7 +1492,7 @@ function addDefaults()
 			'INSERT',
 			'{db_prefix}tp_dlmanager',
 			['name' => 'string', 'icon' => 'string', 'access' => 'string', 'type' => 'string'],
-			['General', '' . $boardurl . '/tp-downloads/icons/folder.png', '-1,0,1', 'dlcat'],
+			['General', 'folder.png', '-1,0,1', 'dlcat'],
 			['id']
 		);
 		$smcFunc['db_free_result']($request);
