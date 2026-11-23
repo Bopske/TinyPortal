@@ -1,7 +1,7 @@
 <?php
 /**
  * @package TinyPortal
- * @version 3.0.5
+ * @version 3.0.6
  * @author IchBin - http://www.tinyportal.net
  * @founder Bloc
  * @license MPL 2.0
@@ -316,6 +316,12 @@ function do_subaction($tpsub)
 		do_articles();
 	}
 	elseif (in_array($tpsub, ['blocks', 'panels']) && (allowedTo('tp_blocks'))) {
+		if ($tpsub === 'panels') {
+			$tabs = panelAdminSettings();
+			$tab = $_GET['panel_tab'] ?? 'general';
+			$context['TPortal']['panel_tabs'] = array_keys($tabs);
+			$context['TPortal']['panel_tab'] = is_string($tab) && isset($tabs[$tab]) ? $tab : 'general';
+		}
 		do_blocks();
 	}
 	elseif (in_array($tpsub, ['menubox', 'addmenu']) && (allowedTo('tp_blocks'))) {
@@ -1482,6 +1488,29 @@ function do_admin($tpsub = 'overview')
 	}
 }
 
+function panelAdminSettings()
+{
+	$tabs = [
+		'general' => [
+			'padding', 'hidebars_custom', 'useroundframepanels', 'showcollapse',
+			'hidebars_admin_only', 'hidebars_profile', 'hidebars_pm',
+			'hidebars_memberlist', 'hidebars_search', 'hidebars_calendar',
+		],
+	];
+	foreach (['left', 'right', 'top', 'center', 'front', 'lower', 'bottom'] as $panel) {
+		$tabs[$panel] = ['block_layout_' . $panel, 'blockgrid_' . $panel, 'blockheight_' . $panel, 'panelstyle_' . $panel];
+		if ($panel !== 'front') {
+			$tabs[$panel][] = $panel . 'panel';
+			$tabs[$panel][] = 'hide_' . $panel . 'bar_forum';
+		}
+		if ($panel === 'left' || $panel === 'right') {
+			$tabs[$panel][] = $panel . 'bar_width';
+		}
+	}
+
+	return $tabs;
+}
+
 function do_postchecks()
 {
 	global $context, $txt, $settings, $boarddir, $smcFunc, $sourcedir;
@@ -1571,6 +1600,16 @@ function do_postchecks()
 			$ssi = [];
 			$checkboxes = [];
 			$default_image_upload_path = $boarddir . "/tp-images/";
+			$panelTab = null;
+			$panelFields = null;
+			if ($from === 'panels' && array_key_exists('panel_tab', $_POST)) {
+				$tabs = panelAdminSettings();
+				$panelTab = $_POST['panel_tab'];
+				if (!is_string($panelTab) || !isset($tabs[$panelTab])) {
+					return 'panels';
+				}
+				$panelFields = $tabs[$panelTab];
+			}
 
 			switch ($from) {
 				case 'settings':
@@ -1583,7 +1622,9 @@ function do_postchecks()
 					$checkboxes = ['use_wysiwyg', 'use_dragdrop', 'hide_editarticle_link', 'print_articles', 'allow_links_article_comments', 'hide_article_facebook', 'hide_article_twitter', 'hide_article_reddit', 'hide_article_digg', 'hide_article_delicious', 'hide_article_stumbleupon'];
 					break;
 				case 'panels':
-					$checkboxes = ['useroundframepanels', 'showcollapse', 'hidebars_admin_only', 'hidebars_profile', 'hidebars_pm', 'hidebars_memberlist', 'hidebars_search', 'hidebars_calendar'];
+					if ($panelTab === null || $panelTab === 'general') {
+						$checkboxes = array_diff(panelAdminSettings()['general'], ['padding', 'hidebars_custom']);
+					}
 					break;
 				default:
 					break;
@@ -1605,6 +1646,9 @@ function do_postchecks()
 			foreach ($_POST as $what => $value) {
 				if (substr($what, 0, 3) == 'tp_') {
 					$where = substr($what, 3);
+					if ($panelFields !== null && (!in_array($where, $panelFields, true) || !is_string($value))) {
+						continue;
+					}
 					$clean = $value;
 					// for frontpage, do some extra
 					if ($from == 'frontpage') {
@@ -1672,7 +1716,7 @@ function do_postchecks()
 				$updateArray['SSI_board'] = implode(',', $ssi);
 			}
 			updateTPSettings($updateArray);
-			return $from;
+			return $panelTab === null ? $from : 'panels;panel_tab=' . $panelTab;
 		}
 		// categories
 		elseif ($from == 'categories') {
