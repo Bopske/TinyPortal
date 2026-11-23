@@ -1,6 +1,6 @@
 <?php
 
-// Version: 3.0.5; TPortalAdmin
+// Version: 3.0.6; TPortalAdmin
 
 // Menu
 $txt['tp-adminheader1'] = 'Settings & frontpage';
@@ -205,7 +205,6 @@ $txt['tp-pub_start'] = 'from';
 $txt['tp-pub_end'] = 'until';
 $txt['tp-notset'] = '- not set -';
 $txt['tp-category'] = 'Category';
-$txt['tp-editcategory'] = 'Edit article category';
 $txt['tp-switchmode'] = 'Type of article';
 $txt['tp-gohtml'] = 'HTML article';
 $txt['tp-gophp'] = 'PHP article';
@@ -267,7 +266,7 @@ $txt['tp-adminiconsinfo'] = 'Article icons may be uploaded as PNG, JPG or GIF fi
 $txt['tp-adminicons6'] = 'Upload a new article icon';
 
 // Add-Edit Article Category
-$txt['tp-editcategory'] = 'Edit';
+$txt['tp-editcategory'] = 'Edit article category';
 $txt['tp-viewcategory'] = 'View the category';
 $txt['tp-addsubcategory'] = 'Add a category under this one';
 $txt['tp-copycategory'] = 'Make a copy of this category';
@@ -591,7 +590,6 @@ $txt['shout_submit_returnkey'] = 'Choose how to submit shout messages';
 $txt['tp-yes-enter'] = 'with Enter';
 $txt['tp-yes-ctrl'] = 'with Ctrl/Cmd+Enter';
 $txt['tp-yes-shout'] = 'with Shout button only';
-$txt['tp-shoutbox_id'] = 'Choose the shoutbox id for this block';
 $txt['tp-shoutbox_iddesc'] = 'You can choose different shoutbox id\'s to be used in different shoutbox blocks. Note that if more shoutbox blocks use the same id, these blocks will display the same shoutbox content.';
 $txt['tp-shoutbox_barposition'] = 'Position of the post bar';
 $txt['tp-shoutbox_barpositiontop'] = 'Top';
