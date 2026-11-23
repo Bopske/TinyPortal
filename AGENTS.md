@@ -23,3 +23,18 @@ Plaats code onder `TinyPortal/` in het bestand dat past bij de verantwoordelijkh
 
 - Verwijs voor elke nieuwe tekst die aan de gebruiker wordt getoond in het templatebestand naar een taalvariabele.
 - Definieer die taalvariabele in het taalbestand dat bij het template hoort, onder `Themes/default/languages/`.
+- In `install.php` worden gebruikersteksten rechtstreeks opgenomen, zonder taalvariabelen.
+
+## Lever correcties ter beoordeling aan
+
+- Lever bij elk correctieverzoek de volledige gecorrigeerde bronbestanden afzonderlijk aan, met hun beoogde paden in de repository.
+- Maak alleen rechtstreeks wijzigingen in de repository als de gebruiker daar expliciet om vraagt.
+
+## Gebruik de vaste map voor JavaScript-bestanden
+
+Plaats alle JavaScript-bestanden onder `Themes/default/scripts/tinyportal/`, relatief aan de hoofdmap van de repository.
+
+## Stem bestandsversies af op de doelversie
+
+- Werk bij een inhoudelijke wijziging aan een bestand met een versienummer ook het versienummer bij naar de doelversie van de wijziging.
+- Behoud het bestaande versienummer van bestanden waarvan de inhoud gelijk blijft.
