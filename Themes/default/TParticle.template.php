@@ -90,7 +90,7 @@ function template_submitarticle()
 		echo '<textarea name="tp_article_body" id="tp_article_body" wrap="auto">' ,  $mg['body'] , '</textarea><br>';
 	}
 	elseif (($tp_use_wysiwyg > 0) && ($article_type == 'html')) {
-		TPwysiwyg('tp_article_body', $mg['body'], true, 'qup_tp_article_body', $tp_use_wysiwyg);
+		TPwysiwyg('tp_article_body', $mg['body'], true, 'qup_tp_article_body', $tp_use_wysiwyg, true);
 	}
 	elseif (($tp_use_wysiwyg == 0) && ($article_type == 'html')) {
 		echo '<textarea name="tp_article_body" id="tp_article_body" wrap="auto">' , $mg['body'], '</textarea><br>';
@@ -125,7 +125,7 @@ function template_submitarticle()
 	if ($article_type == 'php' || $article_type == 'html') {
 		echo '<div id="tp_article_show_intro"', ($mg['useintro'] == 0) ? ' style="display: none;">' : '>' , '<span class="font-strong">' . $txt['tp-introtext'] . '</span>';
 		if (($tp_use_wysiwyg > 0) && ($article_type == 'html')) {
-			TPwysiwyg('tp_article_intro', $mg['intro'], true, 'qup_tp_article_intro', $tp_use_wysiwyg, false);
+			TPwysiwyg('tp_article_intro', $mg['intro'], true, 'qup_tp_article_intro', $tp_use_wysiwyg, true);
 		}
 		else {
 			echo '<textarea name="tp_article_intro" id="tp_article_intro" rows=5 cols=20 wrap="soft">' . $mg['intro'] . '</textarea>';

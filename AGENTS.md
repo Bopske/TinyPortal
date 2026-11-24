@@ -28,6 +28,7 @@ Plaats code onder `TinyPortal/` in het bestand dat past bij de verantwoordelijkh
 ## Lever correcties ter beoordeling aan
 
 - Lever bij elk correctieverzoek de volledige gecorrigeerde bronbestanden afzonderlijk aan, met hun beoogde paden in de repository.
+- Bewaar de bestanden ter beoordeling in `.review/` in de hoofdmap van de repository (`C:\GitHub\TinyPortal\.review\`). Behoud binnen die map het relatieve pad van elk bestand in de repository.
 - Maak alleen rechtstreeks wijzigingen in de repository als de gebruiker daar expliciet om vraagt.
 
 ## Gebruik de vaste map voor JavaScript-bestanden
