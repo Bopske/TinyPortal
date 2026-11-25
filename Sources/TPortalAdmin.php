@@ -2628,7 +2628,32 @@ function do_postchecks()
 			checkSession('post');
 			isAllowedTo('tp_blocks');
 
-			$where = is_numeric($_POST['tpadmin_form_id']) ? $_POST['tpadmin_form_id'] : 0;
+			$where = is_numeric($_POST['tpadmin_form_id']) ? (int) $_POST['tpadmin_form_id'] : 0;
+			$tpBlock = TPBlock::getInstance();
+			$block = $tpBlock->getBlock($where);
+			if (empty($block)) {
+				fatal_lang_error('tp-notablock', false);
+			}
+
+			$blockType = (int) $block['type'];
+			$blockSettings = json_decode($block['settings'], true);
+			$publication = [];
+			try {
+				foreach (['pub_start', 'pub_end'] as $setting) {
+					$stored = $blockSettings[$setting] ?? null;
+					$field = 'tp_block_' . $setting;
+					$publication[$setting] = array_key_exists($field, $_POST)
+						? TPBlock::parsePublicationDate($_POST[$field], $stored)
+						: $stored;
+				}
+			}
+			catch (InvalidArgumentException $e) {
+				fatal_lang_error('tp-block-publication-invalid', false);
+			}
+			if (isset($publication['pub_start'], $publication['pub_end']) && $publication['pub_start'] >= $publication['pub_end']) {
+				fatal_lang_error('tp-block-publication-order', false);
+			}
+
 			$tpgroups = [];
 			$access = [];
 			$lang = [];
@@ -2695,59 +2720,12 @@ function do_postchecks()
 						);
 					}
 					elseif (substr($setting, 0, 4) == 'set_') {
-						// Replace set_ as we don't want it anymore
-						$setting = str_replace('set_', '', $setting);
-
-						// Check for blocks in table, if none insert default blocks.
-						$request = $smcFunc['db_query'](
-							'',
-							'
-                            SELECT settings FROM {db_prefix}tp_blocks
-                            WHERE id = {int:varid} LIMIT 1',
-							['varid' => $where]
-						);
-
-						$data = [];
-						if ($smcFunc['db_num_rows']($request) > 0) {
-							$row = $smcFunc['db_fetch_assoc']($request);
-							$data = json_decode($row['settings'], true);
-							$smcFunc['db_free_result']($request);
-						}
-						$data[$setting] = $value;
-						$smcFunc['db_query'](
-							'',
-							'
-                            UPDATE {db_prefix}tp_blocks
-                            SET settings = {string:data}
-                            WHERE id = {int:blockid}',
-							['data' => json_encode($data), 'blockid' => $where]
-						);
+						$blockSettings[substr($setting, 4)] = $value;
 					}
-					elseif ($setting == 'type') {
-						// Check to see if the type has changed.
-						$request = $smcFunc['db_query'](
-							'',
-							'
-							SELECT type FROM {db_prefix}tp_blocks
-							WHERE id = {int:id} LIMIT 1',
-							['id' => $where]
-						);
-						if ($smcFunc['db_num_rows']($request) > 0) {
-							$row = $smcFunc['db_fetch_assoc']($request);
-							$smcFunc['db_free_result']($request);
-							if ($row['type'] != $value) {
-								$typechange = true;
-								$defaultSetting = TPBlock::getInstance()->getBlockDefault($value) ?? '';
-								$smcFunc['db_query'](
-									'',
-									'
-									UPDATE {db_prefix}tp_blocks
-									SET settings = {string:data}, type = {int:blocktype}
-									WHERE id = {int:blockid}',
-									['data' => json_encode($defaultSetting), 'blocktype' => $value, 'blockid' => $where]
-								);
-							}
-						}
+					elseif ($setting == 'type' && $blockType != $value) {
+						$typechange = true;
+						$blockType = (int) $value;
+						$blockSettings = $tpBlock->getBlockDefault()[$blockType] ?? [];
 					}
 					elseif (in_array($setting, ['off', 'visible'], true) && in_array($value, ['0', '1'], true)) {
 						$smcFunc['db_query'](
@@ -2824,12 +2802,16 @@ function do_postchecks()
 				UPDATE {db_prefix}tp_blocks
 				SET	display = {string:acc2},
 					access = {string:acc},
-					lang = {string:lang}
+					lang = {string:lang},
+					type = {int:blocktype},
+					settings = {string:settings}
 				WHERE id = {int:blockid}',
 				[
 					'acc2' => implode(',', $access),
 					'acc' => implode(',', $tpgroups),
 					'lang' => implode('|', $lang),
+					'blocktype' => $blockType,
+					'settings' => json_encode($publication + $blockSettings),
 					'blockid' => $where,
 				]
 			);

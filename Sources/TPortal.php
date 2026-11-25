@@ -1,7 +1,7 @@
 <?php
 /**
  * @package TinyPortal
- * @version 3.0.5
+ * @version 3.0.6
  * @author IchBin - http://www.tinyportal.net
  * @founder Bloc
  * @license MPL 2.0
@@ -1565,8 +1565,10 @@ function doTPfrontpage()
 
 	if ($smcFunc['db_num_rows']($request) > 0) {
 		while ($row = $smcFunc['db_fetch_assoc']($request)) {
-			// decode the block settings
-			$set = json_decode($row['settings'], true);
+			$set = (array) json_decode($row['settings'], true);
+			if (!TPBlock::isPublished($set, $now)) {
+				continue;
+			}
 
 			// some tests to minimize sql calls
 			if ($row['type'] == 7) {
